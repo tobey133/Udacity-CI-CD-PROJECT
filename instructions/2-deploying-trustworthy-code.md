@@ -39,7 +39,7 @@ The goal of a build phase is to compile or lint the source code to check for syn
 
 #### 2. Test Phase
 
-Unit tests are one of the many very important building blocks of a system that enables Continuous Delivery (notice, we didn’t say “the only or most important thing”). UdaPeople believes that tests should come first just like they do in the scientific method. So, if a test fails, it's because the code is no longer trustworthy. Only trustworthy code should get a ticket to continue the ride!
+Unit tests are one of the many very important building blocks of a system that enables Continuous Delivery (notice, we didn’t say “the only or most important thing”). UdaPeople believes that tests should come first just like they do in the scientific method. So, if a test fails, it's because the code is no longer trustworthy. Only trustworthy code should get a ticket to continue the ride
 
 - Find the jobs named `test-frontend` and `test-backend` in the config file. 
   - For both jobs, select a Docker image that is compatible with NodeJS.
