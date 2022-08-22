@@ -165,8 +165,8 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
             
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
+      # - destroy-environment:
+      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
   run-migrations:
     docker:
@@ -228,8 +228,8 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://newudapeoplefrontend${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-      - destroy-environments:
-         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
+      # - destroy-environments:
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
   deploy-backend:
     docker:
@@ -262,10 +262,10 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml -vv
 
-      - destroy-environments:
-         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - revert-migrations:
-         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}            
+      # - destroy-environments:
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      # - revert-migrations:
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}            
   
     # smoke-test:
     #   docker:
