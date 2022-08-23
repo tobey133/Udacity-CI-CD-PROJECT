@@ -157,10 +157,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
-            apk add --update rsync
-            pip install awscli
-            aws --version
+            apk add --update --no-cache ansible aws-cli openssh rsync
             
       - run:
           name: Configure server
