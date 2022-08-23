@@ -157,7 +157,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
-            apk add update rsync
+            apk add --update rsync
             pip install awscli
             aws --version
             
