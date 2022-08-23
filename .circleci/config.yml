@@ -157,8 +157,10 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+            apk add update rsync
             pip install awscli
             aws --version
+            
       - run:
           name: Configure server
           command: |
@@ -188,8 +190,7 @@ jobs:
               sudo apt-get update && sudo apt-get install -y ca-certificates
               curl --insecure https://kvdb.io/48hCYvFQ4ZeHDY6pMba2h3/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi   
-      # - destroy-environment:
-      #      workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+
 
   deploy-frontend:
     docker:
@@ -218,96 +219,7 @@ jobs:
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
-    
-      - run:
-          name: Deploy frontend objects
-          command: |
-            cd frontend
-            npm install
-            npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://newudapeoplefrontend${CIRCLE_WORKFLOW_ID:0:7} --recursive
-
-      # - destroy-environments:
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
-
-  deploy-backend:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["68:d6:f8:23:52:99:38:14:33:28:43:e1:3b:3d:40:a1"] 
-      - attach_workspace:
-          at: .
-      - run: 
-          name: View content of inventory.txt
-          command: cat .circleci/ansible/inventory.txt
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible curl rsync openssh nodejs npm
-            pip install awscli
-            aws --version
-      - run:
-          name: Deploy backend
-          command: |
-            cd backend
-            npm i
-            npm run build
-            cd ..
-            tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml -vv
-
-      # - destroy-environments:
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      # - revert-migrations:
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}            
-  
-    # smoke-test:
-    #   docker:
-    #     - image: python:3.7-alpine3.11 
-    #   steps:
-    #     - checkout
-    #     - attach_workspace:
-    #         at: ~/.circleci/ansible/inventory.txt
-    #     - run:
-    #         name: Install dependencies
-    #         command: |
-    #           apk add --update curl nodejs npm
-    #           pip install awscli
-    #     - run:
-    #         name: Backend smoke test.
-    #         command: |
-    #           export BACKEND_IP=$(
-    #             aws ec2 describe-instances \
-    #             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-    #             --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-    #             --output text
-    #           )
-    #           echo "${BACKEND_IP}"
-    #           export API_URL="http://${BACKEND_IP}:3030" 
-    #           echo "${API_URL}"
-    #           if curl "${API_URL}/api/status" | grep "ok"
-    #           then
-    #               return 0
-    #           else
-    #               return 1
-    #           fi
-    #     - run:
-    #         name: Frontend smoke test.
-    #         command: |
-    #           URL="http://newudapeoplefrontend${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
-    #           if curl -s ${URL} | grep "Welcome"
-    #           then
-    #             return 0
-    #           else
-    #             return 1
-    #           fi
-             
+               
 
 workflows:
   default:
@@ -329,11 +241,3 @@ workflows:
               only: [main]        
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
