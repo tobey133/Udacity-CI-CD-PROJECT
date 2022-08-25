@@ -166,7 +166,7 @@ jobs:
             cd .circleci/ansible
             ls -al
             ansible-playbook -i inventory.txt configure-server.yml
-          no_output_timeout: 30m 
+          # no_output_timeout: 30m 
               
   # run-migrations:
   #   docker:
