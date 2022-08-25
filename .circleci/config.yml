@@ -148,7 +148,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["09:04:4e:8f:86:7e:9b:03:94:ee:bc:fd:d7:bb:1f:42"] 
+          fingerprints: ["e8:a4:0a:29:26:b5:db:28:64:fd:8b:eb:e0:71:aa:a8"] 
       - attach_workspace:
           at: .    
       - run: 
@@ -166,7 +166,7 @@ jobs:
             cd .circleci/ansible
             ls -al
             ansible-playbook -i inventory.txt configure-server.yml
-          # no_output_timeout: 30m 
+          no_output_timeout: 30m 
               
   # run-migrations:
   #   docker:
