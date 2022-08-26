@@ -138,35 +138,53 @@ jobs:
                 cat .circleci/ansible/inventory.txt
               
         - persist_to_workspace:
-            root: .
+            root: ~/
             paths:
-              - .circleci/ansible/*
+              - project/.circleci/ansible/inventory.txt
 
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.7-alpine3.16
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["9b:08:94:a6:15:97:b2:2c:97:b4:bc:2f:86:d5:59:fa"] 
+          fingerprints: ["23:53:89:b9:ea:a4:40:43:a2:e2:da:2d:f4:b3:0d:b9"] 
       - attach_workspace:
-          at: .    
+          at: ~/  
       - run: 
           name: View content of inventory.txt
           command: cat .circleci/ansible/inventory.txt      
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible --no-cache ansible openssh rsync
-            pip install awscli      
+            apk add --update ansible 
+      - run:
+          name: install openssh
+          command: |
+            apk  openssh rsync
+                  
       - run:
           name: Configure server
           command: |
-            pwd
-            cd .circleci/ansible
-            ls -al
-            ansible-playbook -i inventory.txt configure-server.yml
-          no_output_timeout: 30m 
+              echo NODE_ENV=production > ~/project/backend/.env
+              echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ~/project/backend/.env 
+              echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ~/project//backend/.env
+              echo TYPEORM_HOST=$TYPEORM_HOST >> ~/project/backend/.env
+              echo TYPEORM_PORT=$TYPEORM_PORT >> ~/project/backend/.env
+              echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ~/project/backend/.env
+              echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ~/project/backend/.env
+              echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ~/project/backend/.env
+              echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> ~/project/backend/.env
+              echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> ~/project/backend/.env
+
+              cat ~/project/backend/.env
+              cd ~/project/.circleci/ansible
+              ansible-playbook -i inventory.txt configure-server.yml
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend
               
   # run-migrations:
   #   docker:
