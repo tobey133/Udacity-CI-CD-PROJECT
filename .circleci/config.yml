@@ -180,16 +180,14 @@ jobs:
               cd ~/project/.circleci/ansible
               ansible-playbook -i inventory.txt configure-server.yml
 
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/backend
               
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]  
       - run:
           name: Run migrations
           command: |
