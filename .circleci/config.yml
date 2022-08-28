@@ -210,7 +210,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/.circleci/ansible/inventory.txt
+          at: ~/
       - run:
           name: Install AWS CLI dependencies
           command: |
@@ -252,7 +252,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["223:53:89:b9:ea:a4:40:43:a2:e2:da:2d:f4:b3:0d:b9"] 
       - attach_workspace:
-          at: .
+          at: ~/
       - run: 
           name: View content of inventory.txt
           command: cat .circleci/ansible/inventory.txt
@@ -272,8 +272,8 @@ jobs:
             tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml -vv
+            cat ~/project/.circleci/ansible/inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml -vvv
       # - destroy-environment:
       #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
       # - revert-migrations:
