@@ -365,8 +365,8 @@ jobs:
             else
               return 1
             fi
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
@@ -449,4 +449,6 @@ workflows:
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]      
       - cloudfront-update:
-          requires: [smoke-test]        
+          requires: [smoke-test]     
+      - cleanup:
+          requires: [cloudfront-update]   
