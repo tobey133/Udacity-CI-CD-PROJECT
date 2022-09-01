@@ -330,7 +330,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/.circleci/ansible/inventory.txt
+          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -383,7 +383,7 @@ jobs:
             yum install -y nodejs
       - run:
           name: Update cloudfront distribution
-          command: |
+          command: | 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack \
@@ -413,7 +413,7 @@ jobs:
           command: |
             if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
             then
-              aws s3 rm "s3://newudapeoplefrontend${OldWorkflowID}" --recursive
+              aws s3 rm "s3://udapeoplefrontend${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             else
